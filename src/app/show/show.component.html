@@ -1,0 +1,145 @@
+<html>
+    <style>
+        .centerScreen{
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 40%;
+        }
+    </style>
+    <body>
+        <br>
+        
+        <div  class="container">
+            <!-- <p-toolbar> -->
+                <div  class="row align-self-center ">
+                    <div  class="col-sm-3">
+                        <button pButton type="button" label="เพิ่มผู้ป่วยใหม่" icon="pi pi-plus" (click)="showPositionDialog('top')"></button>&nbsp;
+           
+                    </div> 
+                    <div  class="col-sm-4">
+                        <p>แสดงข้อมูลผู้ป่วย สถานะ <p-dropdown [options]="symptom" [(ngModel)]="selectedSymptom" (click)= "search()"optionLabel="name"></p-dropdown></p>
+                        
+                        <!-- <p>Selected City: {{selectedSymptom ? selectedSymptom.value : 'none'}}</p> -->
+                    </div>
+    
+                    <div  class="col-sm-5">
+                        <p>แบ่งการแสดงผล <p-dropdown [options]="record" [(ngModel)]="selectedRecord" optionLabel="amount" (click)= "search()" ></p-dropdown>เรคคอร์ดต่อหนึ่งหน้า </p>
+                        <!-- <p>Selected amountShow: {{selectedRecord ? selectedRecord.valueInt : 'none'}}</p> -->
+                    </div>
+
+                </div>
+                
+                
+                
+               
+            <!-- </p-toolbar> -->
+
+
+        </div><br>
+        <p-dialog header="เพิ่มข้อมูลผู้ป่วยใหม่" [(visible)]="displayPosition" [position]="position" [modal]="true" [style]="{width: '25vw'}" [baseZIndex]="10000" >
+            <br>
+           
+            <span class="ui-float-label">
+                <input id="float-input" type="text" size="30" pInputText [(ngModel)]="name"> 
+                <label for="float-input">ชื่อ-นามสกุล</label>
+            </span><br>
+            <span class="ui-float-label">
+                <p>เพศ  <p-dropdown [options]="gender" [(ngModel)]="selecredGender" optionLabel="gender"></p-dropdown></p>
+                <p>Selected Gender: {{selecredGender ? selecredGender.gender : 'none'}}</p>
+            </span><br>
+            <span class="ui-float-label">
+                <input id="float-input1" type="text" size="30" pInputText [(ngModel)]="career"> 
+                <label for="float-input1">อาชีพ</label>
+            </span><br>
+            <span class="ui-float-label">      
+                <p-calendar [(ngModel)]="date" [touchUI]="true" [readonlyInput]="true" size="30" dateFormat="dd-mm-yy"></p-calendar>
+                
+                <label for="da" >วันที่พบ </label>
+                
+            </span><br>
+            <span class="ui-float-label">
+                <p-calendar [(ngModel)]="time" [timeOnly]="true"  dateFormat="h:mm:ss"></p-calendar>  
+                <label for="da" >เวลา </label>
+            </span><br>
+            
+                <p>จังหวัด <p-dropdown [options]="county" [(ngModel)]="selecredCounty" optionLabel="city" [virtualScroll]="true"[itemSize]="31" [filter]="false"> </p-dropdown></p>
+                <p>Selected County: {{selecredCounty ? selecredCounty.city : 'none'}}</p>
+            
+            <br>
+
+
+        <!-- <p-footer> -->
+            <div >
+                <button type="button" pButton icon="pi pi-check" (click)="displayPosition=false" (click) = "insert()"label="เพิ่มผู้ป่วยใหม่"></button>
+            </div>
+            
+        <!-- </p-footer> -->
+</p-dialog>
+   
+        <div class="fluid-container">
+                                
+                            <div class="fluid-container">
+                                <p-toolbar > 
+                                <div class="row">
+                                    <div class="col-sm">ลำดับที่</div>
+                                    <div class="col-sm">ชื่อ-นามสกุล</div>
+                                    <div class="col-sm">เพศ</div>
+                                    <div class="col-sm">อาชีพ</div>
+                                    <div class="col-sm">จังหวัด</div>
+                                    <div class="col-sm">วันที่พบ</div>
+                                    <div class="col-sm">เวลาที่พบ</div>
+                                    <div class="col-sm">สถานะปัจจุบัน</div>
+                                    <div class="col-sm">ลบข้อมูล</div>
+                                </div>
+                            </p-toolbar >  
+                                             
+                                 <div class="row" *ngFor = "let col of this.data | paginate:{itemsPerPage:rowPagi, currentPage: pageActual};let i = index" [attr.data-index]="i">
+                                    <div class="col-sm" > {{i+1}}</div>
+                                    <div class="col-sm" > {{col.name}}</div>
+                                    <div class="col-sm" > {{col.gender}}</div>
+                                    <div class="col-sm" > {{col.career}}</div>
+                                    <div class="col-sm" > {{col.county}}</div>
+                                    <div class="col-sm" > {{col.date}}</div>
+                                    <div class="col-sm" > {{col.time}}</div>
+                                    <div class="col-sm" > {{col.status}} <i class="pi pi-pencil" style="cursor: pointer;" (click) = "setID(col.id)"(click)="showEdit()"></i></div>
+                                    <div class="col-sm" ><i class="pi pi-trash" style="cursor: pointer;" (click) = "setID(col.id)"(click)="showDelete()"></i></div>
+
+                                    <p-dialog header="เปลี่ยนสถานะ" [(visible)]="displayEdit" [modal]="true" [style]="{width: '20vw'}" [baseZIndex]="10000" >
+                                        <br>
+                                        <span class="ui-float-label">
+                                            <p-dropdown [options]="symptom1" [(ngModel)]="selectedSymptom1" optionLabel="name"></p-dropdown>
+                                            <!-- <p>Selected Gender: {{selecredGender ? selecredGender.gender : 'none'}}</p> -->
+                                        </span><br>
+                                        <div >
+                                            <button type="button" pButton icon="pi pi-check" (click)="displayEdit=false" (click) = "edit()"label="แก้ไข"></button>
+                                        </div>
+                                    </p-dialog>
+
+                                    <p-dialog header="Confirmation" [(visible)]="displayDelete" [modal]="true" [style]="{width: '20vw'}" [baseZIndex]="10000" >
+                                        <p> ยืนยันการลบข้อมูลผู้ป่วย</p>
+                                       
+                                        <p-footer>
+                                           
+                                                <button type="button" pButton icon="pi pi-check" (click)="displayDelete=false" (click) = "delete()"label="Yes"></button>
+                                                <button type="button" pButton icon="pi pi-check" (click)="displayDelete=false"label="No"></button>
+                                           
+                                            
+                                            
+                                        </p-footer>
+                                        
+                                    </p-dialog>
+                                    
+                                 </div>
+                                     
+                                </div>    
+                                 
+                                    <br>
+            <pagination-controls (pageChange)="pageActual=$event" class="centerScreen"></pagination-controls>    
+           
+            
+
+    
+        </div>
+    </body>
+</html>
